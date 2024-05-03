@@ -1,0 +1,49 @@
+To solve this challenge, you'll need to follow these steps:
+
+Import necessary libraries and load the dataset.
+Preprocess the dataset by removing users with less than 200 ratings and books with less than 100 ratings.
+Use Nearest Neighbors algorithm from sklearn.neighbors to develop a model that finds similar books.
+Create a function named get_recommends that takes a book title as input and returns a list of 5 similar books with their distances.
+Test the get_recommends function to ensure it works correctly.
+
+
+Here's the code to solve the challenge:
+# Step 1: Import necessary libraries and load the dataset
+import pandas as pd
+from sklearn.neighbors import NearestNeighbors
+from scipy.sparse import csr_matrix
+
+# Load the dataset
+books = pd.read_csv('https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/books.csv')
+ratings = pd.read_csv('https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/ratings.csv')
+
+# Step 2: Preprocess the dataset
+# Filter out users with less than 200 ratings
+user_ratings_count = ratings['user_id'].value_counts()
+valid_users = user_ratings_count[user_ratings_count >= 200].index
+ratings = ratings[ratings['user_id'].isin(valid_users)]
+
+# Filter out books with less than 100 ratings
+book_ratings_count = ratings['book_id'].value_counts()
+valid_books = book_ratings_count[book_ratings_count >= 100].index
+ratings = ratings[ratings['book_id'].isin(valid_books)]
+
+# Create a pivot table of user ratings
+user_book_ratings = ratings.pivot(index='book_id', columns='user_id', values='rating').fillna(0)
+
+# Step 3: Develop a model using Nearest Neighbors algorithm
+model_knn = NearestNeighbors(metric='cosine', algorithm='brute')
+model_knn.fit(user_book_ratings)
+
+# Step 4: Create the get_recommends function
+def get_recommends(book_title):
+    book_id = books[books['title'] == book_title]['book_id'].values[0]
+    distances, indices = model_knn.kneighbors(user_book_ratings.loc[book_id].values.reshape(1, -1), n_neighbors=6)
+    similar_books = []
+    for i in range(1, len(distances.flatten())):
+        similar_books.append([books[books['book_id'] == indices.flatten()[i]]['title'].values[0], distances.flatten()[i]])
+    return [book_title, similar_books]
+
+# Step 5: Test the get_recommends function
+result = get_recommends("The Queen of the Damned (Vampire Chronicles (Paperback))")
+print(result)
