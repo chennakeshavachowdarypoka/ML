@@ -1,0 +1,16 @@
+from tabulate import tabulate
+
+# Define the data for the table
+data = [
+    ["Alice", 25, "Female"],
+    ["Bob", 30, "Male"],
+    ["Charlie", 35, "Male"],
+    ["David", 40, "Male"],
+    ["Eve", 28, "Female"]
+]
+
+# Define the headers for the table
+headers = ["Name", "Age", "Gender"]
+
+# Display the table
+print(tabulate(data, headers=headers, tablefmt="grid"))
