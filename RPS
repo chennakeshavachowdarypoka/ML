@@ -1,0 +1,39 @@
+It seems like you're working on a programming challenge to create a program to play Rock, Paper, Scissors. You need to update the provided player function in the RPS.py file to improve its performance against four different bots, winning at least 60% of the games in each match.
+
+Here are some steps you can take to approach this challenge:
+
+Understand the rules of the game: Make sure you understand the rules of Rock, Paper, Scissors and how the game is played.
+Analyze opponent strategies: Review the strategies used by the four different bots provided in the challenge. Understand their patterns and tendencies.
+Develop multiple strategies: Create multiple strategies for your player function. Your strategies should be adaptive and capable of adjusting based on the opponent's moves.
+Test and iterate: Test your player function against each of the four bots provided. Analyze the results and iterate on your strategies to improve performance.
+Consider randomness: Incorporate randomness into your player function to introduce unpredictability and make it more difficult for opponents to exploit patterns.
+Optimize performance: Continuously optimize your player function based on the performance against each bot. Identify weaknesses and adjust strategies accordingly.
+Remember to use the opponent_history argument if you want to keep track of the opponent's previous moves between consecutive calls of the player function.
+
+Good luck with the challenge! If you have any specific questions or need further assistance with your code, feel free to ask.
+
+import random
+
+def player(prev_play, opponent_history = []):
+    if prev_play == "":
+        # First move, play randomly
+        return random.choice(['R', 'P', 'S'])
+    else:
+        # Update opponent's history
+        opponent_history.append(prev_play)
+        
+        # Count opponent's moves
+        move_counts = {'R': 0, 'P': 0, 'S': 0}
+        for move in opponent_history:
+            move_counts[move] += 1
+        
+        # Predict opponent's next move based on most frequent move
+        most_frequent_move = max(move_counts, key=move_counts.get)
+        
+        # Play the move that beats the opponent's most frequent move
+        if most_frequent_move == 'R':
+            return 'P'  # Paper beats Rock
+        elif most_frequent_move == 'P':
+            return 'S'  # Scissors beats Paper
+        else:
+            return 'R'  # Rock beats Scissors
