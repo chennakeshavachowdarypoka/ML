@@ -1,0 +1,65 @@
+To solve this challenge, you'll need to follow these steps:
+
+Import necessary libraries and load the dataset.
+Preprocess the dataset by converting categorical data to numbers and splitting it into train and test datasets.
+Create a regression model using TensorFlow/Keras.
+Train the model using the train dataset.
+Evaluate the model using the test dataset and ensure the Mean Absolute Error (MAE) is under 3500.
+Predict expenses using the test dataset and visualize the results.
+Here's the code to solve the challenge:
+
+
+# Step 1: Import necessary libraries and load the dataset
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+# Load the dataset
+url = "https://raw.githubusercontent.com/stedy/Machine-Learning-with-R-datasets/master/insurance.csv"
+insurance = pd.read_csv(url)
+
+# Step 2: Preprocess the dataset
+# Convert categorical data to numbers
+le = LabelEncoder()
+insurance['sex'] = le.fit_transform(insurance['sex'])
+insurance['smoker'] = le.fit_transform(insurance['smoker'])
+insurance['region'] = le.fit_transform(insurance['region'])
+
+# Split the dataset into train and test datasets
+train_dataset, test_dataset = train_test_split(insurance, test_size=0.2, random_state=42)
+
+# Pop off the "expenses" column to create labels
+train_labels = train_dataset.pop('expenses')
+test_labels = test_dataset.pop('expenses')
+
+# Step 3: Create a regression model using TensorFlow/Keras
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dense(1)
+])
+
+# Step 4: Train the model
+model.compile(optimizer='adam', loss='mae')
+model.fit(train_dataset, train_labels, epochs=100, verbose=0)
+
+# Step 5: Evaluate the model
+mae = model.evaluate(test_dataset, test_labels)
+print("Mean Absolute Error:", mae)
+
+# Step 6: Predict expenses using the test dataset and visualize the results
+import matplotlib.pyplot as plt
+
+test_predictions = model.predict(test_dataset).flatten()
+
+plt.scatter(test_labels, test_predictions)
+plt.xlabel('True Values')
+plt.ylabel('Predictions')
+plt.axis('equal')
+plt.axis('square')
+plt.xlim([0,plt.xlim()[1]])
+plt.ylim([0,plt.ylim()[1]])
+_ = plt.plot([-100, 100], [-100, 100], color='red')
+plt.show()
